@@ -36,6 +36,8 @@ controller
                 res.status(201).send({
                         status: 'success',
                         user_id: validUser.id,
+                        username: validUser.username,
+                        email: validUser.email,
                         role: validUser.role,
                         token: token,
                         result: 'User logged in successfully!'
