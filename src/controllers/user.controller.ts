@@ -24,7 +24,7 @@ controller
         const newuser = await useTypeORM(UserEntity).save(user);
         res.status(201).send(newuser);
     })
-    .get('/login', async (req: Request, res: Response) => {
+    .post('/login', async (req: Request, res: Response) => {
         const validUser = await useTypeORM(UserEntity).findOneBy({ email: req.body.email });
         console.log(validUser);
         if (!validUser || !(await bcrypt.compare(req.body.password, validUser.password))) {
