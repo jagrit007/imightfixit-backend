@@ -10,12 +10,12 @@ import {extractUserIdFromToken} from "../utils/Helper";
 const controller = Router();
 
 controller
-    .post('/place', verifyToken, async (req: Request, res: Response) => {
+    .post('/place/:service_id', verifyToken, async (req: Request, res: Response) => {
         const userId = extractUserIdFromToken(req, res);
         if(userId == -1) {
             return;
         }
-        const serviceId = req.body.service_id;
+        const serviceId = req.params.service_id;
 
         const user = await useTypeORM(UserEntity).findOneBy({ id: userId });
         const service = await useTypeORM(Service).findOneBy({ id: serviceId });
