@@ -42,6 +42,31 @@ controller
             data: orders
         });
     })
+    .get('/total-revenue', verifyToken, async (req: Request, res: Response) => {
+        const userId = extractUserIdFromToken(req, res);
+        if (userId === -1) {
+            return;
+        }
+
+        const user = await useTypeORM(UserEntity).findOneBy({ id: userId });
+        if (!user || user.role !== Role.Provider) {
+            return res.status(403).send({
+                status: 'failure',
+                result: 'Forbidden'
+            });
+        }
+
+        const totalRevenue = await useTypeORM(Order)
+            .createQueryBuilder('order')
+            .where('order.status != :status', { status: Status.Cancelled })
+            .select('SUM(order.total_price) AS total_revenue')
+            .getRawOne();
+
+        res.status(200).send({
+            status: 'success',
+            total_revenue: totalRevenue.total_revenue
+        });
+    })
     .post('/place/:service_id', verifyToken, async (req: Request, res: Response) => {
         const userId = extractUserIdFromToken(req, res);
         if(userId == -1) {
