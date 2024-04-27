@@ -5,11 +5,42 @@ import {verifyToken} from "../middleware/auth.middleware";
 import {Role, UserEntity} from "../db/entity/user.entity";
 import {Order, Status} from "../db/entity/order.entity";
 import {extractUserIdFromToken, getOrderStatusFromString} from "../utils/Helper";
+import {ObjectLiteral} from "typeorm";
 
 
 const controller = Router();
 
 controller
+    .get('/', verifyToken, async (req: Request, res: Response) => {
+        const userId = extractUserIdFromToken(req, res);
+        if (userId === -1 ) {
+            return;
+        }
+
+        const user = await useTypeORM(UserEntity).findOneBy({ id: userId });
+        if (!user) {
+            return res.status(400).send({
+                status: 'failure',
+                result: 'Invalid user'
+            });
+        }
+
+        let orders: ObjectLiteral[];
+        if (user.role === Role.Provider) {
+            console.log("provider user" + user.id);
+            // Fetch all orders, regardless of user role
+            orders = await useTypeORM(Order).find();
+        } else {
+            console.log("normal user" + user.id);
+            // Fetch only the orders placed by the user
+            orders = await useTypeORM(Order).find({where: {user_id: user.id} });
+        }
+
+        res.status(200).send({
+            status: 'success',
+            data: orders
+        });
+    })
     .post('/place/:service_id', verifyToken, async (req: Request, res: Response) => {
         const userId = extractUserIdFromToken(req, res);
         if(userId == -1) {

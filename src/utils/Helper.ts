@@ -1,7 +1,8 @@
-import jwt from 'jsonwebtoken';
 import {Request, Response} from 'express';
 import {JWT_SECRET} from "../middleware/auth.middleware";
 import {Status} from "../db/entity/order.entity";
+
+const jwt = require("jsonwebtoken");
 
 export const extractUserIdFromToken = (req: Request, res: Response): number => {
     const token = req.headers.authorization?.split(' ')[0];
@@ -14,9 +15,8 @@ export const extractUserIdFromToken = (req: Request, res: Response): number => {
     }
 
     try {
-        const decoded = jwt.verify(token, JWT_SECRET!);
-        // @ts-expect-error i just want it to go
-        return typeof decoded.sub === 'string' ? parseInt(decoded.sub) : decoded.sub;
+        const decoded = jwt.verify(token, JWT_SECRET);
+        return typeof decoded.userId === 'string' ? parseInt(decoded.userId) : decoded.userId;
     } catch (err) {
         res.status(401).send({
             status: 'failure',
