@@ -16,6 +16,7 @@ controller
         if (userId === -1 ) {
             return;
         }
+        const orderStatus = getOrderStatusFromString(req.body.order_status);
 
         const user = await useTypeORM(UserEntity).findOneBy({ id: userId });
         if (!user) {
@@ -29,11 +30,11 @@ controller
         if (user.role === Role.Provider) {
             console.log("provider user" + user.id);
             // Fetch all orders, regardless of user role
-            orders = await useTypeORM(Order).find();
+            orders = await useTypeORM(Order).find({ where: {status: orderStatus } });
         } else {
             console.log("normal user" + user.id);
             // Fetch only the orders placed by the user
-            orders = await useTypeORM(Order).find({where: {user_id: user.id} });
+            orders = await useTypeORM(Order).find({where: {user_id: user.id, status: orderStatus} });
         }
 
         res.status(200).send({
