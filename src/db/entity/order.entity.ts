@@ -21,8 +21,8 @@ export class Order extends BaseEntity {
     @Column({ type: 'enum', enum: Status, default: Status.Pending })
     status: Status;
 
-    @Column('decimal')
-    total_price: number;
+    @Column('decimal', {nullable: true})
+    total_price: number | null;
 
     @CreateDateColumn()
     created_at: Date;

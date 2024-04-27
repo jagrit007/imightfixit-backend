@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import {Request, Response, Router} from 'express';
 import {useTypeORM} from '../db/typeorm';
 import {UserEntity} from '../db/entity/user.entity';
+import {JWT_SECRET} from "../middleware/auth.middleware";
 
 const jwt = require("jsonwebtoken");
 
@@ -31,7 +32,7 @@ controller
                         result: 'Incorrect Credentials!'
                 });
         } else {
-            const token = jwt.sign({ userId: validUser.id }, 'your_secret_key', { expiresIn: '1h' });
+            const token = jwt.sign({ userId: validUser.id }, JWT_SECRET, { expiresIn: '1h' });
                 res.status(201).send({
                         status: 'success',
                         user_id: validUser.id,
