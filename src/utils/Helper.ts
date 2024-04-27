@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import {Request, Response} from 'express';
 import {JWT_SECRET} from "../middleware/auth.middleware";
+import {Status} from "../db/entity/order.entity";
 
 export const extractUserIdFromToken = (req: Request, res: Response): number => {
     const token = req.headers.authorization?.split(' ')[0];
@@ -24,3 +25,15 @@ export const extractUserIdFromToken = (req: Request, res: Response): number => {
         return -1;
     }
 };
+
+export function getOrderStatusFromString(statusString: string): Status | undefined {
+    const statusMap: { [key: string]: Status } = {
+        'pending': Status.Pending,
+        'in_progress': Status.InProgress,
+        'completed': Status.Completed,
+        'cancelled': Status.Cancelled,
+        'paid': Status.Paid,
+    };
+
+    return statusMap[statusString];
+}

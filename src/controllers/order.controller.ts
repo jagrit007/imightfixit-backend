@@ -2,9 +2,9 @@ import {Request, Response, Router} from 'express';
 import {useTypeORM} from '../db/typeorm';
 import {Service} from "../db/entity/service.entity";
 import {verifyToken} from "../middleware/auth.middleware";
-import {UserEntity} from "../db/entity/user.entity";
+import {Role, UserEntity} from "../db/entity/user.entity";
 import {Order, Status} from "../db/entity/order.entity";
-import {extractUserIdFromToken} from "../utils/Helper";
+import {extractUserIdFromToken, getOrderStatusFromString} from "../utils/Helper";
 
 
 const controller = Router();
@@ -39,6 +39,77 @@ controller
             status: 'success',
             order_id: newOrder.id,
             order_status: newOrder.status,
+        });
+    })
+    .patch('/accept/:order_id', verifyToken, async (req: Request, res: Response) => {
+        const userId = extractUserIdFromToken(req, res);
+        if (userId == -1) {
+            return;
+        }
+
+        const orderId = parseInt(req.params.order_id);
+        const totalPrice = req.body.total_price;
+
+        const user = await useTypeORM(UserEntity).findOneBy({ id: userId });
+        const order = await useTypeORM(Order).findOneBy({ id: orderId });
+
+        if (!user || !order || !totalPrice) {
+            return res.status(400).send({
+                status: 'failure',
+                result: 'Invalid request data'
+            });
+        } else if(user.role !== Role.Provider) {
+            return res.status(401).send({
+                status: 'failure',
+                result: 'Unauthorised'
+            })
+        }
+
+        order.status = Status.InProgress;
+        order.total_price = totalPrice;
+        const updatedOrder = await useTypeORM(Order).save(order);
+
+        res.status(200).send({
+            status: 'success',
+            order_id: updatedOrder.id,
+            order_status: updatedOrder.status,
+            total_price: updatedOrder.total_price
+        });
+    })
+    // COMPLETE OR CANCEL
+    .patch('/finish/:order_id', verifyToken, async (req: Request, res: Response) => {
+        const userId = extractUserIdFromToken(req, res);
+        if (userId == -1) {
+            return;
+        }
+
+        const orderStatusString = req.body.order_status;
+        const orderStatus = getOrderStatusFromString(orderStatusString);
+        const orderId = parseInt(req.params.order_id);
+
+        const user = await useTypeORM(UserEntity).findOneBy({ id: userId });
+        const order = await useTypeORM(Order).findOneBy({ id: orderId });
+
+        if (!user || !order || !orderStatus) {
+            return res.status(400).send({
+                status: 'failure',
+                result: 'Invalid request data'
+            });
+        } else if(user.role !== Role.Provider) {
+            return res.status(401).send({
+                status: 'failure',
+                result: 'Unauthorised'
+            })
+        }
+
+        order.status = orderStatus;
+        const updatedOrder = await useTypeORM(Order).save(order);
+
+        res.status(200).send({
+            status: 'success',
+            order_id: updatedOrder.id,
+            order_status: updatedOrder.status,
+            total_price: updatedOrder.total_price
         });
     });
 

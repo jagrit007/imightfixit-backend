@@ -5,6 +5,7 @@ export enum Status {
     InProgress = 'in_progress',
     Completed = 'completed',
     Cancelled = 'cancelled',
+    Paid = "paid"
 }
 
 @Entity()
