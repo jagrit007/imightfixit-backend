@@ -3,7 +3,7 @@ import {useTypeORM} from '../db/typeorm';
 import {Service} from "../db/entity/service.entity";
 import {Role, UserEntity} from "../db/entity/user.entity";
 import {verifyToken} from "../middleware/auth.middleware";
-import jwt from 'jsonwebtoken';
+import {extractUserIdFromToken} from "../utils/Helper";
 
 
 const controller = Router();
@@ -17,8 +17,7 @@ controller
         });
     })
     .post('/add', verifyToken, async (req: Request, res: Response) => {
-        const token = req.headers.authorization?.split(' ')[0];
-        const userId = jwt.verify(token!, 'your_secret_key').sub;
+        const userId= extractUserIdFromToken(req, res);
 
         const user = await useTypeORM(UserEntity).findOneBy({id: userId});
         if(user != null && user.role == Role.Provider) {

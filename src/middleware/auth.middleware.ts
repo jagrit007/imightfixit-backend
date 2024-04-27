@@ -2,6 +2,8 @@ import {NextFunction, Request, Response} from 'express';
 
 const jwt = require("jsonwebtoken");
 
+export const JWT_SECRET = "your_secret_key";
+
 export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.split(' ')[0];
     if (!token) {
@@ -11,7 +13,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
         });
     }
 
-    jwt.verify(token, 'your_secret_key', (err: any, decoded: { userId: any; }) => {
+    jwt.verify(token, JWT_SECRET, (err: any, decoded: { userId: any; }) => {
         if (err) {
             return res.status(401).send({
                 status: 'failure',
