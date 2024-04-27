@@ -1,4 +1,4 @@
-import { Express } from 'express';
+import {Express} from 'express';
 import typeORMConnect from '../db/typeorm';
 
 const appSetup = async (app: Express) => {
