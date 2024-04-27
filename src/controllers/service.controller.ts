@@ -1,12 +1,13 @@
-import { Router, Request, Response } from 'express';
-import { useTypeORM } from '../db/typeorm';
+import {Request, Response, Router} from 'express';
+import {useTypeORM} from '../db/typeorm';
 import {Service} from "../db/entity/service.entity";
 import {Role, UserEntity} from "../db/entity/user.entity";
+import {verifyToken} from "../middleware/auth.middleware";
 
 const controller = Router();
 
 controller
-    .get('/getAll', async (req: Request, res: Response) => {
+    .get('/getAll', verifyToken, async (req: Request, res: Response) => {
         const services = await useTypeORM(Service).find();
         res.status(200).send({
             status: 'success',
