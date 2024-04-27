@@ -1,11 +1,11 @@
 import {
-    Entity,
-    PrimaryGeneratedColumn,
+    BaseEntity,
     Column,
     CreateDateColumn,
-    UpdateDateColumn,
-    BaseEntity,
-    ManyToOne
+    Entity,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
 } from 'typeorm';
 import {UserEntity} from "./user.entity";
 
@@ -25,9 +25,6 @@ export class Service extends BaseEntity {
 
     @Column('int')
     duration: number;
-
-    @Column()
-    provider_id: number;
 
     @CreateDateColumn()
     created_at: Date;

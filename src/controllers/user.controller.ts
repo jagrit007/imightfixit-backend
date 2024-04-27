@@ -8,11 +8,6 @@ const jwt = require("jsonwebtoken");
 const controller = Router();
 
 controller
-    /**
-    * REGISTER USER
-     * req: name, email, pass
-     * res:
-    * */
     .post('/register', async (req: Request, res: Response) => {
         const user = new UserEntity();
         user.name = req.body.name;
@@ -22,7 +17,10 @@ controller
 
 
         const newuser = await useTypeORM(UserEntity).save(user);
-        res.status(201).send(newuser);
+        res.status(201).send({
+            status: 'success',
+            data: newuser
+        });
     })
     .post('/login', async (req: Request, res: Response) => {
         const validUser = await useTypeORM(UserEntity).findOneBy({ email: req.body.email });
