@@ -105,11 +105,10 @@ controller
         }
 
         const orderId = parseInt(req.params.order_id);
-        const totalPrice = req.body.total_price;
+        const totalPrice = req.headers.total_price;
 
         const user = await useTypeORM(UserEntity).findOneBy({ id: userId });
         const order = await useTypeORM(Order).findOneBy({ id: orderId });
-
         if (!user || !order || !totalPrice) {
             return res.status(400).send({
                 status: 'failure',
