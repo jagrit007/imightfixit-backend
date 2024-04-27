@@ -8,8 +8,8 @@ export default async function typeORMConnect(): Promise<void> {
         type: 'postgres',
         host: "localhost",
         port: 5432,
-        username: "Jayra",
-        password: "",
+        username: "root",
+        password: "meonly123",
         database: "test",
         entities: [
             `${__dirname}/entity/*.entity.ts`
